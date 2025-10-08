@@ -1,0 +1,5 @@
+Flask==3.0.0
+pywin32==308; sys_platform == 'win32'
+python-dotenv==1.0.0
+flask-cors==6.0.1
+python-json-logger==4.0.0
