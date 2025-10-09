@@ -53,7 +53,7 @@ python app_service.py install
    ```
    2. Then package it in the executable format:
    ```bash
-   pyinstaller --onefile --name qb_shim app.py
+   pyinstaller --onefile --name qb_server_agent app.py
    ```
 Note that the executable will be available in the dist folder. Also have in mind that the executable will be specific for the operating system that executed the packaging
 

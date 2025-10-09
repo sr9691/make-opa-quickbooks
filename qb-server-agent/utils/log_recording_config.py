@@ -6,7 +6,7 @@ from pythonjsonlogger import jsonlogger
 
 def configure_logging():
     log_dir = os.getenv("LOG_FILE_PATH", "./logs")
-    log_filename = os.getenv("LOG_FILE", "qb_shim.log")
+    log_filename = os.getenv("LOG_FILE", "qb_server_agent.log")
     log_level = os.getenv("LOG_LEVEL", "INFO").upper()
     log_format = os.getenv("LOG_FORMAT", "json")
     log_file_enabled = os.getenv("LOG_FILE_ENABLED", "false").lower() == "true"
@@ -40,7 +40,7 @@ def configure_logging():
     else:
         file_formatter = plain_text_formatter
 
-    app_logger = logging.getLogger("qb_shim")
+    app_logger = logging.getLogger("qb_server_agent")
     app_logger.setLevel(getattr(logging, log_level, logging.INFO))
     app_logger.propagate = False
 
