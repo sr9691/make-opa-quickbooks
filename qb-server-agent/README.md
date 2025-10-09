@@ -57,9 +57,21 @@ python app_service.py install
    ```
 Note that the executable will be available in the dist folder. Also have in mind that the executable will be specific for the operating system that executed the packaging
 
+6. Using installer script for Windows:
+   1. Open PowerShell with administrative privileges
+   2. Execute:
+   ```bash
+   Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+   ./install_qb_shim.ps1
+   ```
+
 ## API Token
 
 This API requires an API token to be used. It should be set in the environment variable `API_TOKEN`.
 
 As a suggestion, you can generate a random token using the following command:
 ```python -c "import secrets; print(secrets.token_hex(32))"```
+
+
+
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
