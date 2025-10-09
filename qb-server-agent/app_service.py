@@ -19,9 +19,9 @@ else:
     pythoncom = None
 
 class PythonAppService(win32serviceutil.ServiceFramework):
-    _svc_name_ = "QBShimService"
-    _svc_display_name_ = "Quickbooks SHIM API Service"
-    _svc_description_ = "Allows to send QBXML requests to Quickbooks using an API"
+    _svc_name_ = "QBServerAgentService"
+    _svc_display_name_ = "Quickbooks Server Agent API Service"
+    _svc_description_ = "Exposes an API to receive and process QBXML messages, sent to a server that runs QB Shim service"
 
     def __init__(self, args):
         super().__init__(args)

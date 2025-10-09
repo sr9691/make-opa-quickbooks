@@ -2,21 +2,14 @@
 
 A Python Flask application that provides a REST API for integrating with QuickBooks Desktop through the QuickBooks SDK.
 
-## Features
-
-- **REST API Integration**: Clean REST endpoints for QuickBooks operations
-- **QB SDK Integration**: Direct integration with QuickBooks Desktop via COM
-- **MVC Architecture**: Well-structured code following Model-View-Controller principles
-- **Windows Executable**: Can be packaged as a standalone Windows executable
-- **Health Monitoring**: Built-in health check endpoint
-- **Error Handling**: Comprehensive error handling and logging
-
 ## Requirements
 
 - Python 3.12.x - **MAKE SURE TO USE 32-BIT PYTHON**
 - Windows operating system (for QuickBooks Desktop integration)
 - QuickBooks Desktop installed
 - pywin32 for COM object access
+
+Also check `.env` containing all the possible environment variables with examples.
 
 ## Installation
 
@@ -48,6 +41,20 @@ pip install -r requirements.txt
 ```bash
 python app_service.py install
 ```
+
+5. If you want to run as executable:
+
+   1. First you need to install pyinstaller:
+   
+   ```bash
+   python app_service.py install
+   ```
+   2. Then package it in the executable format:
+   ```bash
+   pyinstaller --onefile --name qb_shim app.py
+   ```
+Note that the executable will be available in the dist folder. Also have in mind that the executable will be specific for the operating system that executed the packaging
+
 **IMPORTANT**: Both the `qb-shim.pyz` and `QuickBooks` apps must run under the same privileges (running as administrator is better)
 
 ## API Endpoints
