@@ -20,7 +20,7 @@ Also check `.env` containing all the possible environment variables with example
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd qb-shim
+cd qb-server-agent
 ```
 
 2. Install dependencies:
@@ -32,12 +32,12 @@ pip install -r requirements.txt
    
     1. Package the application:
     ```bash
-    python -m zipapp . -m "app:main" -o qb-shim.pyz
+    python -m zipapp . -m "app:main" -o qb-server-agent.pyz
     ```
 
    2. Run:
     ```bash
-    python .\qb-shim.pyz
+    python .\qb-server-agent.pyz
     ```
 4. If you want to run as service:
 ```bash
