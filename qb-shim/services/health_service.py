@@ -37,7 +37,9 @@ class HealthService:
             except Exception as e:
                 logger.debug(f"QuickBooks connection is working, but session couldn't be started: {str(e)}")
                 response['company_file_open'] = False
-                error = 'QuickBooks connection is working, but session couldn\'t be started'
+                response['error'] = 'QuickBooks connection is working, but session couldn\'t be started'
+                response['status'] = 'Unhealthy'
+                return response
 
         # Test open company file
         opened_file_path = qb.get_company_file_path() if session_started else None
