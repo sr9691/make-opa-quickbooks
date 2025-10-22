@@ -9,7 +9,7 @@ health_service = HealthService()
 def check_health():
     try:
         health_status = health_service.get_health_status()
-        status_code = 200 if health_status['status'] == 'healthy' else 503
+        status_code = 200 if health_status['status'].lower() == 'healthy' else 503
         return jsonify(health_status), status_code
 
     except Exception as e:

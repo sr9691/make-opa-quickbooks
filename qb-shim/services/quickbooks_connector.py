@@ -421,8 +421,10 @@ class QuickBooksConnector:
         if sys.platform == 'win32' and pythoncom is not None:
             try:
                 # Use CoInitializeEx with COINIT_MULTITHREADED for better Flask support
-                pythoncom.CoInitializeEx(pythoncom.COINIT_MULTITHREADED)
-                logger.debug("COM initialized for current thread (multithreaded)")
+                # pythoncom.CoInitializeEx(pythoncom.COINIT_MULTITHREADED)
+                # logger.debug("COM initialized for current thread (multithreaded)")
+                pythoncom.CoInitialize()
+                logger.debug("COM initialized for current thread (single-threaded)")
             except Exception as e:
                 # If already initialized, try single-threaded
                 try:

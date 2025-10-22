@@ -13,6 +13,9 @@ def post_qbxml():
         except Exception:
             return jsonify({"error": "Invalid JSON body"}), 400
 
+        if payload['qbxml'] is None:
+            return jsonify({"error": "qbxml attribute is required"}), 400
+
         result = _process_json_request(payload)
         return _build_response(result)
 
@@ -37,8 +40,8 @@ def post_qbxml():
 def _process_json_request(payload: dict) -> dict:
     return process_qbxml_request(
         qbxml=payload['qbxml'],
-        identifier=payload['identifier'],
-        idempotency_key=payload['idempotency_key']
+        identifier=payload['identifier'] if 'identifier' in payload else None,
+        idempotency_key=payload['idempotency_key'] if 'idempotency_key' in payload else None
     )
 
 def _process_xml_request(body: str, request_id: str = None, idempotency_key: str = None) -> dict:

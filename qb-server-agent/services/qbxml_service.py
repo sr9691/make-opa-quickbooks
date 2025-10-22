@@ -170,6 +170,8 @@ def _resolve_transaction_object(idempotency_key, identifier, qbxml) -> dict:
     if 'transaction' not in tx:
         retry_count = 0
         transaction_id = str(uuid.uuid4())
+        identifier = identifier if identifier is not None else uuid.uuid4()
+        idempotency_key = idempotency_key if idempotency_key is not None else identifier
         now = datetime.now()
         new_tx = Transaction(
             transaction_id=transaction_id,
