@@ -57,7 +57,7 @@ def main():
 
     configure_logging()
 
-    app.run(host=host, port=port, debug=debug)
+    app.run(host=host, port=port, debug=debug, threaded=False, use_reloader=False)
 
 if __name__ == '__main__':
     main()

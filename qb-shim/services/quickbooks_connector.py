@@ -28,10 +28,10 @@ class QuickBooksConnector:
     References:
     - https://developer.intuit.com/app/developer/qbdesktop/docs/develop/communicating-with-quickbooks
     - pywin32 COM client for QBXMLRP2
-    
+
     Note: This connector only works on Windows systems with QuickBooks Desktop installed.
     On non-Windows platforms, methods will raise NotImplementedError.
-    
+
     Singleton pattern ensures only one connection instance exists throughout the application.
     """
 
@@ -56,7 +56,7 @@ class QuickBooksConnector:
         # Prevent re-initialization
         if self._initialized:
             return
-        
+
         self.request_processor = None
         self.ticket = None
         self.is_connected = False
@@ -151,60 +151,64 @@ class QuickBooksConnector:
             logger.error(f"Failed to open QuickBooks connection: {str(e)}")
             raise Exception(f"Could not connect to QuickBooks: {str(e)}")
 
-    def begin_session(self, company_file_path: str = "", mode: int = 0):
+    def begin_session(self, company_file_path: str = "", mode: int = None):
         """
-        Begin a session with QuickBooks Desktop with a timeout.
+        Begin a session with QuickBooks Desktop.
+        Automatically tries different modes if mode is None.
 
         Args:
             company_file_path (str): Path to the QuickBooks company file (.QBW)
-            mode (int): Connection mode (0 = do not care, 1 = single-user, 2 = multi-user)
+            mode (int): Connection mode (None = auto-detect, 1 = single-user, 2 = multi-user)
 
         Returns:
             str: Session ticket for subsequent operations
 
         Raises:
-            Exception: If session cannot be started or if timeout occurs
+            Exception: If session cannot be started
         """
         self._ensure_windows()
 
         if not self.is_connected or self.request_processor is None:
             raise Exception("Connection must be opened before beginning a session")
 
-        timeout_sec = int(os.getenv("QB_SESSION_TIMEOUT", "30"))  # default 30s
-        result = {}
-        exception_holder = {}
+        # Auto-detect mode: try single-user first (most common for development)
+        modes_to_try = [mode] if mode is not None else [1, 2]
+        mode_names = {1: "single-user", 2: "multi-user"}
 
-        def target():
+        last_exception = None
+
+        for try_mode in modes_to_try:
+            logger.info(f"Attempting BeginSession with mode {try_mode} ({mode_names.get(try_mode, 'unknown')})")
+
             try:
-                result['ticket'] = self.request_processor.BeginSession(company_file_path, mode)
+                # Call BeginSession directly - NO THREADING!
+                # COM objects in STA mode cannot be accessed across threads
+                ticket = self.request_processor.BeginSession(company_file_path, try_mode)
+
+                # Success!
+                self.ticket = ticket
+                self.is_session_open = True
+                logger.info(f"✓ Successfully began QuickBooks session with mode {try_mode}. Ticket: {self.ticket}")
+                return self.ticket
+
             except Exception as e:
-                exception_holder['error'] = e
+                error_msg = str(e)
 
-        thread = Thread(target=target)
-        thread.daemon = True
-        thread.start()
-        thread.join(timeout_sec)
+                # Check if it's a mode mismatch error (error code -2147220464)
+                if "mode other than" in error_msg.lower() or "-2147220464" in error_msg:
+                    logger.warning(f"Mode {try_mode} incompatible with current QuickBooks state")
+                    last_exception = e
+                    if len(modes_to_try) > 1:
+                        continue  # Try next mode
 
-        if thread.is_alive():
-            # Timeout hit
-            logger.error(f"BeginSession timed out after {timeout_sec} seconds")
-            # Ensure connection cleanup
-            try:
-                self.close_connection()
-            except Exception as e:
-                logger.warning(f"Error during connection cleanup after timeout: {str(e)}")
-            raise TimeoutError(f"QuickBooks BeginSession timed out after {timeout_sec} seconds")
+                # Other error or last mode failed
+                self.is_session_open = False
+                logger.error(f"BeginSession failed: {e}")
+                raise Exception(f"Could not begin session: {e}")
 
-        if 'error' in exception_holder:
-            self.is_session_open = False
-            raise Exception(f"Could not begin session: {exception_holder['error']}")
-
-        # Success
-        self.ticket = result['ticket']
-        self.is_session_open = True
-        logger.info(f"Successfully began QuickBooks session. Ticket: {self.ticket}")
-        return self.ticket
-
+        # All modes failed
+        self.is_session_open = False
+        raise Exception(f"Could not begin session in any mode. Last error: {last_exception}")
 
     def get_company_file_info(self) -> dict:
         """
@@ -420,16 +424,8 @@ class QuickBooksConnector:
         """Initialize COM for the current thread if needed"""
         if sys.platform == 'win32' and pythoncom is not None:
             try:
-                # Use CoInitializeEx with COINIT_MULTITHREADED for better Flask support
-                # pythoncom.CoInitializeEx(pythoncom.COINIT_MULTITHREADED)
-                # logger.debug("COM initialized for current thread (multithreaded)")
                 pythoncom.CoInitialize()
                 logger.debug("COM initialized for current thread (single-threaded)")
             except Exception as e:
-                # If already initialized, try single-threaded
-                try:
-                    pythoncom.CoInitialize()
-                    logger.debug("COM initialized for current thread (single-threaded)")
-                except:
-                    # Already initialized, which is fine
-                    logger.debug(f"COM already initialized: {str(e)}")
+                # Already initialized is fine
+                logger.debug(f"COM already initialized: {str(e)}")
