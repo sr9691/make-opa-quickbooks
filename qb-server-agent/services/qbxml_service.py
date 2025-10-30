@@ -116,7 +116,7 @@ def _process_transaction(transaction: Transaction, is_retry: bool) -> dict:
             }
         else:
             transaction.status = 'error'
-            transaction.qbxml_response = qb_response['qbxml_response']
+            transaction.qbxml_response = qb_response['qb_response']
             transaction.error_message = qb_response['qb_error_message']
             transaction.error_code = qb_response['error_code']
             transaction.retry_count = retries + 1 if is_retry else retries

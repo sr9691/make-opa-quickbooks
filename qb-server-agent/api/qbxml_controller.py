@@ -5,7 +5,7 @@ qbxml_bp = Blueprint('qbxml', __name__)
 
 @qbxml_bp.route('/qbxml', methods=['POST'])
 def post_qbxml():
-    content_type = request.headers.get('Content-Type', '').lower().strip()
+    content_type = request.headers.get('Content-Type', 'application/json').lower().strip()
 
     if content_type.startswith('application/json'):
         try:
