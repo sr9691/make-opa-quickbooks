@@ -56,7 +56,7 @@ class HealthService:
         if quickbooks_connected:
             try:
                 open_mode = int(os.getenv("QB_OPEN_MODE", 2))
-                ticket = request_processor.BeginSession(os.getenv("QB_COMPANY_FILE", ""), mode=open_mode)
+                ticket = request_processor.BeginSession(os.getenv("QB_COMPANY_FILE", ""), open_mode)
                 session_started = True
             except Exception as e:
                 logger.debug(f"QuickBooks connection is working, but session couldn't be started: {str(e)}")

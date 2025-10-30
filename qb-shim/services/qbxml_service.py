@@ -41,8 +41,8 @@ class QBXMLService:
             request_processor.OpenConnection2("", os.getenv("QB_APP_NAME", "QuickBooks Integration Shim"), 1)
 
             logger.info(f"Beggining session with mode {open_mode}.")
-            ticket = request_processor.BeginSession(os.getenv("QB_COMPANY_FILE", ""), mode=open_mode)
-            logger.info(f"✓ Successfully began QuickBooks session. Ticket: {self.ticket}")
+            ticket = request_processor.BeginSession(os.getenv("QB_COMPANY_FILE", ""), open_mode)
+            logger.info(f"✓ Successfully began QuickBooks session. Ticket: {ticket}")
 
         except Exception as e:
             logger.error(f"QuickBooks connection failed: {str(e)}")
